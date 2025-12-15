@@ -1,20 +1,21 @@
 from flask import Flask
+import sys
+import os
 import traceback
 
-# Placeholder for the error message
+# --- CRITICAL FIX: Tell Python to look inside the current folder ---
+# This forces Vercel to see 'app.py' which sits right next to this file
+sys.path.append(os.path.dirname(__file__))
+
 STARTUP_ERROR = None
 
 try:
-    # Try to load your app
+    # Now this import will work because we fixed the path above
     from app import app
 except Exception:
-    # CRITICAL: Capture the error string RIGHT NOW
     STARTUP_ERROR = traceback.format_exc()
-    
-    # Create a dummy app just to display the error
     app = Flask(__name__)
 
-# If an error was captured, override all routes to show it
 if STARTUP_ERROR:
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
